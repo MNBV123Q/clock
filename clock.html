@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        canvas{
+            border: 2px red solid;
+        }
+    </style>
+</head>
+<body onload="clock()">
+    <canvas id="myCanvas" width="400" height="400"></canvas>
+</body>
+<script>
+    var myCanvas = document.getElementById("myCanvas");
+    var c = myCanvas.getContext("2d");
+    function clock(){
+        c.clearRect(0, 0, 400, 400);
+        c.save();//通过将当前状态放入栈中，保存 context 全部状态的方法。
+        //用restore()可恢复状态
+        var date = new Date();
+        var sec = date.getSeconds();
+        var min = date.getMinutes();
+        var hour = date.getHours();   
+        c.translate(200,200);//即原点向右下平移200，在画布中心
+        c.rotate(-Math.PI /2);//xy轴逆时针旋转90度
+        /* 
+        --->x
+        |
+        y
+        */
+       /*  
+       x 
+       ^
+       |
+       | --   -->y
+       */
+      
+         //画外框
+        c.beginPath();
+        c.strokeStyle = "rgba(133,56,223,0.7)";
+        c.lineWidth = 10;
+        c.arc(0, 0, 180, Math.PI / 180 * 0, Math.PI / 180 * 360);
+        c.stroke();
+  
+        //秒钟刻度线
+        for(let i = 0;i<60;i++){
+            c.beginPath();
+            c.strokeStyle='yellowgreen';
+            c.lineWidth=4;
+            c.moveTo(157, 0);
+            c.lineTo(160,0);
+            c.stroke();
+            c.rotate(Math.PI/180*360/60);//旋转角度
+    
+        }
+        //分钟刻度线
+        for(let i = 0;i < 12; i++){
+            c.beginPath();
+            c.rect(150, -5, -20, 10);
+            c.fillStyle='green';
+            c.fill();
+            c.rotate(Math.PI/180*360/12);//旋转角度
+        }
+
+        //时针
+        hour = hour>12?hour-12:hour;
+        c.beginPath();
+        c.save();   //先保存没有原点没有移动前的位置状态，moveTo和LineTo影响到原点坐标
+        console.log(hour);
+        var hourRadian = Math.PI/180*30*hour;   //一小时时针转30度，360/12=60
+        var minRadian = Math.PI/180*0.5*min;     //一分钟时针转0.5度  30/60=0.5
+        var secRadian = Math.PI/180*0.5/60*min;     //一秒钟秒针转度   0.5/60=   
+        c.rotate(hourRadian+minRadian+secRadian);
+        c.strokeStyle = "yellowgreen";
+        c.lineWidth = 6;
+        c.moveTo(-20,0);
+        c.lineTo(60,0);
+        c.stroke();
+        c.restore();    //画完时针，恢复原点位置状态
+
+        
+        //分针
+        c.beginPath();
+        c.save();
+        console.log(min);
+        c.rotate(Math.PI/180*6*min+Math.PI/30/60*sec); // 一分钟分针旋转：360/60=6度
+        c.strokeStyle = "springgreen";
+        c.lineWidth = 6;
+        c.moveTo(-20,0);
+        c.lineTo(100,0);
+        c.stroke();
+        c.restore();
+  
+
+        //秒针
+        c.save();
+        c.beginPath();
+        //console.log(sec); 
+        // c.rotate(Math.PI/180*6*sec); // 一秒钟秒针旋转：360/60=6度
+        // c.strokeStyle = "red";
+        // c.lineWidth = 3;
+        // c.moveTo(-40,0);
+        // c.lineTo(120,0);
+        //c.stroke();
+        //c.restore();
+        console.log(sec);
+        c.lineWidth=5;
+        c.strokeStyle = "rgba(124,232,155,0.5)";
+        c.arc(0, 0, 153, Math.PI / 180 * 0, Math.PI / 180 * 360/60*sec);
+        c.stroke(); 
+        c.restore();
+        c.restore();    //恢复2次回到最初状态
+    }
+
+    setInterval(clock,1000);
+</script>
+</html>
